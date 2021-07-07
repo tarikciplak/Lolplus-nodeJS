@@ -16,18 +16,29 @@ router.get('/mundo/:nickname', function (req, res) {
     .then(function (accountObject) {
       details.push(accountObject)
       mundo.getLeagueRanking(accountObject).then((data) => {
-        details.push(data)
-        object = details.reduce(function (x, y) {
-          Object.keys(y).forEach(function (z) {
-            x[z] = y[z];
-          })
-          x['soloq'] = x['0'];
-          delete x['0']     
-          return x
-        });
-        res.json(object)
+        const rank = data.find(item => {
+          item.queueType == 'RANKED_SOLO_5x5'
+          return item
+        })
+        details.push({ soloq: rank })
+
       })
+      mundo.getChampionMastery(accountObject)
+        .then(function (championMasteryTotal) {
+          details.push({ mastery: championMasteryTotal.slice(0, 3) })
+          object = details.reduce(function (x, y) {
+            Object.keys(y).forEach(function (z) {
+              x[z] = y[z];
+            })
+            return x
+          });
+          res.json(object)
+
+        })
+
+
     })
+
     .catch(err => res.json(err));
 
 });
@@ -50,13 +61,24 @@ router.get('/matches/:nickname', function (req, res) {
 })
 
 // Router listing weekly free champions
-router.get('/freechampionslist', function(req,res){
-  mundo.getFreeChampionRotation().then(function (rotationObject){
+router.get('/freechampionslist', function (req, res) {
+  mundo.getFreeChampionRotation().then(function (rotationObject) {
     res.json(rotationObject)
   }).catch(err => res.json(err))
 })
 
-
+router.get('/mundo/mastery/:nickname', function (req, res) {
+  mundo.getSummonerByName(req.params.nickname)
+    .then(function (accountObj) {
+      // Returns the best of three champion master
+      return mundo.getChampionMastery(accountObj);
+    })
+    .then(function (championMasteryTotal) {
+      res.json(championMasteryTotal.slice(0, 3))
+    })
+    .catch(err => res.json(err));
+})
 
 
 module.exports = router;
+
