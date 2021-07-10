@@ -21,7 +21,6 @@ router.get('/mundo/:nickname', function (req, res) {
           return item
         })
         details.push({ soloq: rank })
-
       })
       mundo.getChampionMastery(accountObject)
         .then(function (championMasteryTotal) {
@@ -33,10 +32,7 @@ router.get('/mundo/:nickname', function (req, res) {
             return x
           });
           res.json(object)
-
         })
-
-
     })
 
     .catch(err => res.json(err));
