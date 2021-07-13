@@ -28,15 +28,11 @@ router.get('/mundo/:nickname', function (req, res) {
           object = details.reduce(function (x, y) {
             Object.keys(y).forEach(function (z) {
               x[z] = y[z];
-            })
-            return x
+            }) return x
           });
           res.json(object)
         })
-    })
-
-    .catch(err => res.json(err));
-
+    }).catch(err => res.json(err));
 });
 
 // Router listing last 5 matches of user's
